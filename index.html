@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#edf2f2">
+  <meta name="description" content="星汐 Aster — 原生 Canvas 2D 原創人物與程序骨架動畫實驗。完全離線、零圖片素材。">
+  <title>ASTER · Canvas 動畫工房</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css"><link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./index.html" aria-label="Aster 動畫工房首頁"><span class="brand-mark">✧</span> ASTER<span class="brand-divider"></span><span class="brand-sub">動畫工房</span></a><div class="edition"><span class="live-dot"></span> CANVAS 2D EXPLORATION <span class="edition-number">№ 001</span></div></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">A LITTLE CHARACTER. A WORLD OF MOTION.</p><h1>用曲線，賦予她生命<span>。</span></h1><p class="intro-copy">一筆一畫的原創角色，一舉一動的冒險序章。</p></div><div class="project-tag">原生繪圖實驗<span>100% CODE · 0 IMAGE ASSETS</span></div></section>
+    <div class="workspace">
+      <section class="viewport" aria-label="人物動畫舞台">
+        <div class="stage-top"><span class="stage-label"><span class="live-dot"></span> LIVE CANVAS</span><span id="play-status">即時演算中</span></div>
+        <div class="stage-name" aria-hidden="true"><b id="stage-word">ASTER</b><span>THE TIDESTAR EXPLORER</span></div>
+        <canvas id="character-canvas" tabindex="0" aria-label="星汐的自由移動舞台，使用 W A S D 控制四方向移動" aria-describedby="movement-help">你的瀏覽器需要支援 Canvas 2D。</canvas>
+        <div class="stage-bottom"><div><span class="character-index">01 / 原創角色</span><h2 id="actor-name">星汐 Aster</h2><p><span id="actor-info">humanoid · player</span></p></div><button id="reset" class="reset" title="回復初始展示設定">↺ <span>重設視圖</span></button></div>
+        <div class="stage-readout"><span id="state-label">● 待機 · IDLE</span><span id="fps">60 FPS</span></div>
+        <div id="touch-controls" class="touch-controls" aria-label="手機觸控操控">
+          <div class="joystick-wrap"><div id="joystick" class="joystick" role="group" aria-label="移動搖桿：小幅推動走路，大幅推動跑步"><span class="joystick-ring"></span><span id="joystick-knob" class="joystick-knob"></span></div><span id="joystick-status">輕推走路 · 遠推跑步</span></div>
+          <div class="touch-actions"><button type="button" data-touch-action="bumpAttack" hidden>撞擊<span>特殊動作</span></button><button type="button" data-touch-action="cast">✧<span>施法</span></button><button type="button" data-touch-action="attack">✦<span>攻擊</span></button></div>
+        </div>
+      </section>
+      <button id="mobile-panel-toggle" type="button" class="mobile-panel-toggle" aria-expanded="false" aria-controls="settings-panel">角色／換裝 ⚙</button>
+      <button id="panel-backdrop" class="panel-backdrop" type="button" aria-label="關閉角色與換裝面板" hidden></button>
+      <aside id="settings-panel" class="panel" aria-label="動畫控制面板">
+        <button id="mobile-panel-close" class="mobile-panel-close" type="button">完成，回到操控 ×</button>
+        <p class="mobile-orientation-hint">可直向操作；橫向有更寬的移動空間。左手搖桿、右手施法。</p>
+        <div class="panel-title"><div><p class="eyebrow">MOTION STUDY</p><h2>動作實驗室</h2></div><span class="panel-icon">⌘</span></div>
+        <div class="character-tools">
+          <label for="character-select">目前控制角色</label><select id="character-select"></select>
+          <p id="rig-info"></p>
+          <div class="run-speed-control">
+            <label for="run-speed">跑步移動速度 <span>世界單位／秒</span></label>
+            <input id="run-speed" type="number" min="1" max="2000" step="1" value="228" inputmode="numeric" aria-describedby="run-speed-help">
+            <p id="run-speed-help">只調整目前角色；數值越大跑得越快，可先試試 400。Shift + WASD 跑步。</p>
+          </div>
+          <div class="scene-options"><label><input id="show-all" type="checkbox" checked> 同場顯示全部角色</label><label><input id="show-effects" type="checkbox" checked> 火球示範</label></div>
+          <div class="facing-tools" aria-label="切換朝向"><button data-facing="front">正面</button><button data-facing="back">背面</button><button data-facing="left">左側</button><button data-facing="right">右側</button></div>
+          <div class="facing-tools"><button id="others-walk">其他角色原地走路</button><button id="others-idle">其他角色待機</button></div>
+        </div>
+        <div class="section-heading"><h3>選擇動作</h3><span>01 — 07</span></div>
+        <div class="actions" role="group" aria-label="選擇人物動畫">
+          <button data-state="idle" class="action active" aria-pressed="true"><span class="action-icon">◌</span><span>待機<small>Idle</small></span><kbd>1</kbd></button>
+          <button data-state="walk" class="action" aria-pressed="false"><span class="action-icon">↗</span><span>走路<small>Walk</small></span><kbd>2</kbd></button>
+          <button data-state="run" class="action" aria-pressed="false"><span class="action-icon">»</span><span>跑步<small>Run</small></span><kbd>3</kbd></button>
+          <button data-state="attack" class="action" aria-pressed="false"><span class="action-icon">✦</span><span>攻擊<small>Attack</small></span><kbd>4</kbd></button>
+          <button data-state="hurt" class="action wide" aria-pressed="false"><span class="action-icon">ϟ</span><span>受傷<small>Hurt</small></span><kbd>5</kbd></button>
+          <button data-state="cast" class="action"><span class="action-icon">✧</span><span>施法<small>Cast</small></span><kbd>6</kbd></button>
+          <button data-state="bumpAttack" class="action"><span class="action-icon">◡</span><span>撞擊<small>Bump</small></span><kbd>7</kbd></button>
+        </div>
+        <p id="motion-description" class="motion-description" aria-live="polite">輕輕呼吸，讓海風拂過髮梢。</p>
+        <div class="movement-controls">
+          <div class="movement-heading"><h3>自由探索</h3><span>W A S D</span></div>
+          <p id="movement-help">WASD 移動，Shift 跑步，4 裝備攻擊，6 施法，7 史萊姆撞擊。<br>可邊走邊攻擊；放開方向鍵後保持朝向。</p>
+          <div class="movement-readout"><span>朝向 <strong id="facing-value">正面 · FRONT</strong></span><span>座標 <output id="position-value">0, 0</output></span></div>
+          <button id="reset-position" class="position-reset">⌖ 重設角色位置</button>
+        </div>
+        <details class="equipment-section" open><summary>紙娃娃換裝 · 即時更新</summary><div id="equipment-controls"></div></details>
+        <p id="event-readout" role="status"></p>
+        <div class="divider"></div>
+        <label class="slider-label" for="speed">播放速度 <output id="speed-value">1.00×</output></label>
+        <input id="speed" type="range" min="0.25" max="2" step="0.05" value="1"><div class="range-ends"><span>0.25×</span><span>2.00×</span></div>
+        <label class="slider-label scale-label" for="scale">人物縮放 <output id="scale-value">100%</output></label>
+        <input id="scale" type="range" min="0.6" max="1.5" step="0.05" value="1"><div class="range-ends"><span>60%</span><span>150%</span></div>
+        <div class="divider"></div>
+        <label class="toggle-row" for="skeleton"><span>顯示骨架關節<small>觀察關節與肢體連接</small></span><input id="skeleton" type="checkbox" role="switch"><span class="switch" aria-hidden="true"></span></label>
+        <button id="pause" class="pause"><span id="pause-icon">Ⅱ</span><span id="pause-label">暫停動畫</span><kbd>SPACE</kbd></button>
+        <div class="frame-tools"><button id="step" disabled>逐格前進 ↗</button><span>暫停後可觀察每一格</span></div>
+      </aside>
+    </div>
+    <footer><span><i></i> 每一個像素，都來自程式。</span><span>曲線繪製 <b>＋</b> 關節骨架 <b>＋</b> 程序動畫</span><a href="CHARACTER_SYSTEM.md">角色系統文件 ↗</a></footer>
+  </main>
+  <!-- Classic deferred scripts intentionally support file:// without a web server. -->
+  <script defer src="js/CharacterAppearance.js"></script><script defer src="js/MotionSettings.js"></script><script defer src="js/AnimationController.js"></script><script defer src="js/CharacterState.js"></script><script defer src="js/MovementController.js"></script><script defer src="js/Skeleton.js"></script><script defer src="js/HumanoidRig.js"></script><script defer src="js/SwordSystem.js"></script><script defer src="js/CharacterRenderer.js"></script><script defer src="js/CharacterViews.js"></script><script defer src="js/CharacterSystem.js"></script><script defer src="js/PaperDoll.js"></script><script defer src="js/VisualEffects.js"></script><script defer src="js/EquipmentSystem.js"></script><script defer src="js/BlobCharacter.js"></script><script defer src="js/ViktorCharacter.js"></script><script defer src="js/AruCatCharacter.js"></script><script defer src="js/CharacterContent.js"></script><script defer src="js/CharacterScene.js"></script><script defer src="js/CanvasEngine.js"></script><script defer src="js/UIController.js"></script><script defer src="js/TouchController.js"></script><script defer src="js/main.js"></script>
+</body></html>
